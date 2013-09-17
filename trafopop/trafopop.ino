@@ -1,6 +1,4 @@
 #include <SPI.h>
-#include <avr/pgmspace.h>
-#include <EEPROM.h>
 
 #define NUM 100
 
@@ -12,7 +10,7 @@ color;
 
 color pixels[NUM];
 
-byte pointX[NUM] =
+char pointX[NUM] =
 {
   10,
   10,
@@ -116,7 +114,7 @@ byte pointX[NUM] =
   0
 };
 
-byte pointY[NUM] =
+char pointY[NUM] =
 {
   4
     ,5
@@ -220,35 +218,15 @@ byte pointY[NUM] =
     ,12
 };
 
-#if 0
 inline char normalizedX(byte index)
 {
-  byte x = index % 20;
-  if (x>9)
-  {
-    x = 19-x;
-  }
-
-  return x-5;
+  return pointX[index];
 }
 
 inline char normalizedY(byte index)
 {
-  byte y = index / 10;
-
-  return y-5;
+  return pointY[index];
 }
-#else
-inline char normalizedX(byte index)
-{
-  return pointX[index]-5;
-}
-
-inline char normalizedY(byte index)
-{
-  return pointY[index]-5;
-}
-#endif
 
 typedef struct CGPoint
 {
@@ -306,8 +284,7 @@ inline void draw(float frameCount)
     float x = (x0*cosr - y0*sinr);
     float y = (x0*sinr + y0*cosr);
 
-
-    //   x++;
+    // x++;
     y++;
 
     //  float r = sqrt(x*x+y*y);
@@ -316,12 +293,12 @@ inline void draw(float frameCount)
     float t = time + 100.0/(r+1.0);
     float s = sin(r+t);
 
-    //float light = 3825.0*fabs(0.05*(sin(t)+sin(time+a*8.0)));
+    // float light = 3825.0*fabs(0.05*(sin(t)+sin(time+a*8.0)));
     byte light = 3200;
     float u = -sin(r*2.5-a-time+s);
     float v = sin(r*1.5+a+a-time+s);
     float w = cos(r+a*3+time)-s;
-    //float l = sqrt(u*u + v*v + w*w);
+    // float l = sqrt(u*u + v*v + w*w);
 
     u *= light;
     v *= light;
@@ -404,17 +381,6 @@ inline void draw2(float frameCount)
   }
 }
 
-void show(byte *bytes, int size)
-{
-  for (int index=0; index<size; index++)
-  {
-    byte c = pgm_read_byte(bytes + index);
-
-    // nur 25% Helligkeit
-    for (SPDR = c>>2; !(SPSR & _BV(SPIF)););
-  }
-}
-
 void show2(byte *bytes, int size)
 {
   for (int index=0; index<size; index++)
@@ -426,26 +392,8 @@ void show2(byte *bytes, int size)
   }
 }
 
-#define NUM_STATUS 2
-#define NUM_STATES NUM_STATUS
-
 void setup()
 {
-  unsigned long last = 0;
-  unsigned long now;
-
-#if 0
-  byte state = (EEPROM.read(0)+1) % (NUM_STATES+1);
-  EEPROM.write(0, state);
-  byte status = status;
-#else
-  byte state = EEPROM.read(0);
-  Serial.begin(9600);
-  byte status = state;
-#endif
-
-  status = 1;
-
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
@@ -456,74 +404,8 @@ void setup()
 
   while (1)
   {
-    if (Serial.available())
-    {
-      byte data = Serial.read();
-
-      switch (data)
-      {
-      case '+':
-      case '=':
-      case '*':
-        {
-          state++;
-
-          break;
-        }
-
-      case '-':
-      case '_':
-        {
-          state += NUM_STATES - 1;
-
-          break;
-        }
-
-      default:
-        {
-          state = data -'0';
-        }
-      }
-
-      state %= NUM_STATES;
-
-      Serial.write(data);
-      EEPROM.write(0, state);
-
-      if (state)
-      {
-        status = state;
-      }
-    }
-
-    if (!state)
-    {
-      now = millis();
-      if (now - last > 10000)
-      {
-        last = now;
-        status = status % NUM_STATUS + 1;
-      }
-    }
-
-    switch (status)
-    {
-    case 1:
-      {
-        draw2(framecount++);
-        show2((byte *)pixels, sizeof(pixels));
-
-        break;
-      }
-
-    case 2:
-      {
-        draw(framecount++);
-        show2((byte *)pixels, sizeof(pixels));
-
-        break;
-      }
-    }
+    draw2(framecount++);
+    show2((byte *)pixels, sizeof(pixels));
 
     delay(2);
   }

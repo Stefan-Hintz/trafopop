@@ -1,4 +1,4 @@
-Trafo Pop
+Trafo Pop (Version for P.R.)
 =========
 
 wearable LEDs using Arduino Nano and WS2801

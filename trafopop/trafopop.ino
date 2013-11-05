@@ -1,244 +1,28 @@
-#include <SPI.h>
+#include <Adafruit_NeoPixel.h>
 
-#define NUM 100
+#define PIN 11
+#define NUM 256
 
-typedef struct color
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM, PIN, NEO_GRB + NEO_KHZ800);
+
+inline float normalizedX(byte index)
 {
-  byte r, g, b;
-}
-color;
-
-color pixels[NUM];
-
-char pointX[NUM] =
-{
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
-};
-
-char pointY[NUM] =
-{
-  4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,0
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-};
-
-#if 0
-inline char normalizedX(byte index)
-{
-  return pointX[index];
+  return (index >> 4) - 7.5;
 }
 
-inline char normalizedY(byte index)
+inline float normalizedY(byte index)
 {
-  return pointY[index];
-}
-#else
-inline char normalizedX(byte index)
-{
-  return index/10;
-}
+  char y = index & 0xf;
 
-inline char normalizedY(byte index)
-{
-  return index%10;
+  return (index & 0x10 ? y : 0xf - y) - 7.5;
 }
-#endif
 
 typedef struct CGPoint
 {
@@ -289,7 +73,7 @@ inline void draw(float frameCount)
   // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
   // float size = (sin(time*0.1)+1.2)*64.0;
 
-  for (byte i = 0; i < NUM; i++)
+  for (int i = 0; i < NUM; i++)
   {
     float x0 = s * normalizedX(i);
     float y0 = s * normalizedY(i);
@@ -316,12 +100,7 @@ inline void draw(float frameCount)
     v *= light;
     w *= light;
 
-    struct color color2 =
-    {
-      u,v,w 
-    };
-
-    pixels[i] = color2;
+    strip.setPixelColor(i, u, v, w);
   }
 }
 
@@ -336,12 +115,12 @@ inline void draw2(float frameCount)
   float cosr = cos(r);
 
   CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
+ // CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
   // CGPoint center3 = CGPointMake(cos(time*0.346), cos(time*0.263));
   // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
   // float size = (sin(time*0.1)+1.2)*64.0;
 
-  for (byte i = 0; i < NUM; i++)
+  for (int i = 0; i < NUM; i++)
   {
     float x0 = s * normalizedX(i);
     float y0 = s * normalizedY(i);
@@ -356,9 +135,9 @@ inline void draw2(float frameCount)
     int size = 64;
     float d = distance(position, center1)*size;
     CGPoint color = CGPointMake(cos(d),sin(d));
-    d = distance(position, center2)*size;
-    color.x += cos(d);
-    color.y += sin(d);
+  //  d = distance(position, center2)*size;
+  //  color.x += cos(d);
+   // color.y += sin(d);
     /*
     d = distance(position, center3)*size;
      color.x += cos(d);
@@ -384,86 +163,52 @@ inline void draw2(float frameCount)
      green = cos(green*3.0+0.5)+sin(green*2.0);
      blue = cos(blue*3.0+0.5)+sin(blue*2.0);
      */
-    struct color color2 =
-    {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
-      };
-
-      pixels[i] = color2;
+     
+    strip.setPixelColor(i, max(0,red * 255), max(0,green * 255), max(0,blue * 255));
   }
 }
 
 inline void draw3(float frameCount)
 {
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
-  float r = 2.0 * M_PI * sin(frameCount * 0.000742);
+  float s = 0.1 * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  // float r = 2.0 * M_PI * sin(frameCount * 0.000742);
 
-  float time = frameCount * 0.002;
+  float time = frameCount * 0.1;
 
-  float sinr = sin(r);
-  float cosr = cos(r);
-
-  CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
+  CGPoint center1 = CGPointMake(2*sin(time), 2*sin(time*0.535));
  
-  for (byte i = 0; i < NUM; i++)
+  for (int i = 0; i < NUM; i++)
   {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
-    float x = (x0*cosr - y0*sinr);
-    float y = (x0*sinr + y0*cosr);
-
+    float x = s * normalizedX(i);
+    float y = s * normalizedY(i);
+ 
     CGPoint position =
     {
-      x,y
+      x, y
     };
 
-    int size = 64;
-    float d = distance(position, center1)*size;
-    CGPoint color = CGPointMake(cos(d+time),sin(d));
-  
-    CGPoint ncolor = normalize(color);
-
-    float red = ncolor.x*ncolor.x;
-    float green = ncolor.x*ncolor.y;
-    float blue = ncolor.x-ncolor.y;
-
-    struct color color2 =
-    {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
-      };
-
-      pixels[i] = color2;
-  }
-}
-
-void show(byte *bytes, int size)
-{
-  for (int index=0; index<size; index++)
-  {
-    // nur 25% Helligkeit    
-    byte c = bytes[index] >> 2;
-
-    for (SPDR = c; !(SPSR & _BV(SPIF)););
+    float d = distance(position, center1);
+ 
+    float red = cos(d+time);
+    float green = sin(d);
+    float blue = sin(d-time)*0.81;
+    
+     strip.setPixelColor(i, max(0, red * 255), max(0, green * 255), max(0, blue * 255));
   }
 }
 
 void setup()
 {
-  SPI.begin();
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
-  // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
-  SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
-  // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
+  strip.begin();
+  strip.setBrightness(32);
+  strip.show(); // Initialize all pixels to 'off'
+
   long framecount = 0;
 
   while (1)
   {
     draw3(framecount++);
-    show((byte *)pixels, sizeof(pixels));
-
-    delay(2);
+    strip.show();
   }
 }
 

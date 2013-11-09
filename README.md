@@ -3,7 +3,7 @@ Trafo Pop
 
 wearable LEDs using Arduino Nano and WS2801
 
-This repositiory contains the software for the "build your own LED jacket" workshop.
+This repositiory contains the software for the "build your own LED jacket" workshops.
 
 http://www.trafopop.com/arduino-led-jacket-workshop
 

@@ -1,6 +1,6 @@
 #include <SPI.h>
 
-#define NUM 52
+#define NUM 102
 
 typedef struct color
 {
@@ -10,46 +10,31 @@ color;
 
 color pixels[NUM];
 
-char pointX[NUM] =
+/*
+  Layout:
+ zuerst 2x7 LEDs, links (-1) von oben (6) nach unten (-6), dann rechts (1) von unten (-6) nach oben (6).
+ 
+ Dann fünf Ringe siehe: setupPoints 
+ */
+
+float pointX[NUM] =
 {
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3,
-  -3, -1, 1, 3,
-  3, 1, -1, -3
+  -1, -1, -1, -1, -1, -1, -1,
+  1, 1, 1, 1, 1, 1, 1
 };
 
-char pointY[NUM] =
+float pointY[NUM] =
 {
-  -12, -12, -12, -12,
-  -10, -10, -10, -10,
-  -8, -8, -8, -8,
-  -6, -6, -6, -6,
-  -4, -4, -4, -4,
-  -2, -2, -2, -2,
-  0, 0, 0, 0,
-  2, 2, 2, 2,
-  4, 4, 4, 4,
-  6, 6, 6, 6,
-  8, 8, 8, 8,
-  10, 10, 10, 10,
-  12, 12, 12, 12  
+  6, 4, 2, 0, -2, -4, -6,
+  -6, -4, -2, 0, 2, 4, 6
 };
 
-inline char normalizedX(byte index)
+inline float normalizedX(byte index)
 {
   return pointX[index];
 }
 
-inline char normalizedY(byte index)
+inline float normalizedY(byte index)
 {
   return pointY[index];
 }
@@ -218,8 +203,41 @@ void show2(byte *bytes, int size)
   }
 }
 
+void setupPoints()
+{
+  // Fünf Ringe
+#define RING_COUNT 5
+
+  // Anzahl der Pixel pro Ring
+  byte counts[RING_COUNT] =
+  {   
+    30, 24, 18, 12, 4  
+  };
+
+  // Die ersten 14 Pixel wurden bereits oben definiert
+  byte index = 14;
+
+  for (byte ring = 0; ring < RING_COUNT; ring++)
+  {
+    // von außen (9) nach innen (1)
+    byte radius = 9 - 2 * ring;
+    byte count = counts[ring];
+
+    for (byte ringIndex = 0; ringIndex < count; ringIndex++, index++)
+    {
+      float angle = 2 * M_PI * ringIndex / count;
+
+      // jeder Ring beginnt oben und geht dann im Uhrzeigersinn weiter
+      pointX[index] = sin(angle) * radius;
+      pointY[index] = cos(angle) * radius;  
+    }
+  }
+}
+
 void setup()
 {
+  setupPoints();
+
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);

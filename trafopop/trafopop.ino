@@ -12,15 +12,15 @@ color pixels[NUM];
 
 /*
   Layout:
- zuerst 2x7 LEDs, links (-1) von oben (6) nach unten (-6), dann rechts (1) von unten (-6) nach oben (6).
+ zuerst 2x7 LEDs, rechts (1) von oben (6) nach unten (-6), dann links (-1) von unten (-6) nach oben (6).
  
  Dann fünf Ringe siehe: setupPoints 
  */
 
 float pointX[NUM] =
 {
-  -1, -1, -1, -1, -1, -1, -1,
-  1, 1, 1, 1, 1, 1, 1
+  1, 1, 1, 1, 1, 1, 1,
+  -1, -1, -1, -1, -1, -1, -1
 };
 
 float pointY[NUM] =
@@ -126,7 +126,7 @@ inline void draw(float frameCount)
 
 inline void draw2(float frameCount)
 {
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  float s = 0.003 * (0.7 + 0.2 * sin(frameCount * 0.000827));
   float r = 2.0 * M_PI * sin(frameCount * 0.000742);
 
   float time = frameCount * 0.002;
@@ -208,10 +208,16 @@ void setupPoints()
   // Fünf Ringe
 #define RING_COUNT 5
 
-  // Anzahl der Pixel pro Ring
+  // number of pixels per ring
   byte counts[RING_COUNT] =
   {   
     30, 24, 18, 12, 4  
+  };
+
+  // number of pixels before the top direction in each ring
+  byte offsets[RING_COUNT] =
+  {   
+    5, 4, 3, 3, 1
   };
 
   // Die ersten 14 Pixel wurden bereits oben definiert
@@ -225,9 +231,11 @@ void setupPoints()
 
     for (byte ringIndex = 0; ringIndex < count; ringIndex++, index++)
     {
-      float angle = 2 * M_PI * ringIndex / count;
+      // jeder Ring beginnt oben minus Offset und geht dann im Uhrzeigersinn weiter
+  
+      byte ringOffset = offsets[ring];
+      float angle = 2 * M_PI * (ringIndex - ringOffset) / count;
 
-      // jeder Ring beginnt oben und geht dann im Uhrzeigersinn weiter
       pointX[index] = sin(angle) * radius;
       pointY[index] = cos(angle) * radius;  
     }

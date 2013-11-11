@@ -10,6 +10,8 @@ color;
 
 color pixels[NUM];
 
+#if 0
+
 char pointX[NUM] =
 {
   10,
@@ -218,7 +220,6 @@ char pointY[NUM] =
     ,12
 };
 
-#if 0
 inline char normalizedX(byte index)
 {
   return pointX[index];
@@ -275,10 +276,10 @@ inline CGPoint normalize(CGPoint p)
 
 inline void draw(float frameCount)
 {
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  float s = 0.001 * (0.7 + 0.2 * sin(frameCount * 0.000827));
   float r = 2.0 * M_PI * sin(frameCount * 0.000742);
 
-  float time = frameCount * 0.02;
+  float time = frameCount * 0.002;
 
   float sinr = sin(r);
   float cosr = cos(r);
@@ -306,7 +307,7 @@ inline void draw(float frameCount)
     float s = sin(r+t);
 
     // float light = 3825.0*fabs(0.05*(sin(t)+sin(time+a*8.0)));
-    byte light = 3200;
+    int light = 3200;
     float u = -sin(r*2.5-a-time+s);
     float v = sin(r*1.5+a+a-time+s);
     float w = cos(r+a*3+time)-s;
@@ -395,7 +396,7 @@ inline void draw2(float frameCount)
 
 inline void draw3(float frameCount)
 {
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  float s = 0.003 * (0.7 + 0.2 * sin(frameCount * 0.000827));
   float r = 2.0 * M_PI * sin(frameCount * 0.000742);
 
   float time = frameCount * 0.002;
@@ -403,9 +404,9 @@ inline void draw3(float frameCount)
   float sinr = sin(r);
   float cosr = cos(r);
 
-  CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
+  CGPoint center1 = CGPointMake(cos(time*0.1), cos(time*0.535));
   CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
- 
+
   for (byte i = 0; i < NUM; i++)
   {
     float x0 = s * normalizedX(i);
@@ -421,14 +422,14 @@ inline void draw3(float frameCount)
     int size = 64;
     float d = distance(position, center1)*size;
     CGPoint color = CGPointMake(cos(d+time),sin(d));
-  
+
     CGPoint ncolor = normalize(color);
 
     float red = ncolor.x*ncolor.x;
     float green = ncolor.x*ncolor.y;
     float blue = ncolor.x-ncolor.y;
 
-    struct color color2 =
+    struct color color2 = 
     {
       max(0,red * 255), max(0,green * 255), max(0,blue * 255)
       };
@@ -460,10 +461,27 @@ void setup()
 
   while (1)
   {
-    draw3(framecount++);
-    show((byte *)pixels, sizeof(pixels));
+    for (int i = 0; i < 2000; i++)
+    {
+      draw3(framecount++);
+      show((byte *)pixels, sizeof(pixels));
 
-    delay(2);
+      delay(2);
+    }
+    for (int i = 0; i < 1000; i++)
+    {
+      draw2(framecount++);
+      show((byte *)pixels, sizeof(pixels));
+
+      delay(2);
+    }
+    for (int i = 0; i < 1000; i++)
+    {
+      draw(framecount++);
+      show((byte *)pixels, sizeof(pixels));
+
+      delay(2);
+    }
   }
 }
 

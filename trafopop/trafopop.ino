@@ -1,14 +1,14 @@
 #include <SPI.h>
 
-#define NUM 100
+#define NUM 50
 
 typedef struct color
 {
   byte r, g, b;
 }
-color;
+Color;
 
-color pixels[NUM];
+Color pixels[NUM];
 
 #if 0
 
@@ -385,7 +385,7 @@ inline void draw2(float frameCount)
      green = cos(green*3.0+0.5)+sin(green*2.0);
      blue = cos(blue*3.0+0.5)+sin(blue*2.0);
      */
-    struct color color2 =
+    Color color2 =
     {
       max(0,red * 255), max(0,green * 255), max(0,blue * 255)
       };
@@ -429,7 +429,7 @@ inline void draw3(float frameCount)
     float green = ncolor.x*ncolor.y;
     float blue = ncolor.x-ncolor.y;
 
-    struct color color2 = 
+    Color color2 = 
     {
       max(0,red * 255), max(0,green * 255), max(0,blue * 255)
       };
@@ -438,15 +438,33 @@ inline void draw3(float frameCount)
   }
 }
 
+inline void drawWalker(long frameCount)
+{
+  float time = frameCount * 0.03;
+
+  for (byte i = 0; i < NUM; i++)
+  {
+    float c = i*0.1+30*cos(time*0.1)+time*0.11;
+    Color color =
+    {
+      (max(0,255*sin(c))), (max(0,255*sin((c)*0.81))), (max(0,255*sin(c*0.69)))
+    };
+
+    pixels[i] = color; 
+  }
+}
+
 void show(byte *bytes, int size)
 {
-  for (int index=0; index<size; index++)
+  for (int index = 0; index < size; index++)
   {
     // nur 25% Helligkeit    
     byte c = bytes[index] >> 2;
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
+  
+  delay(2);
 }
 
 void setup()
@@ -463,24 +481,26 @@ void setup()
   {
     for (int i = 0; i < 2000; i++)
     {
+      drawWalker(framecount++);
+      show((byte *)pixels, sizeof(pixels));
+    }
+
+    for (int i = 0; i < 2000; i++)
+    {
       draw3(framecount++);
       show((byte *)pixels, sizeof(pixels));
-
-      delay(2);
     }
+
     for (int i = 0; i < 1000; i++)
     {
       draw2(framecount++);
       show((byte *)pixels, sizeof(pixels));
-
-      delay(2);
     }
+
     for (int i = 0; i < 1000; i++)
     {
       draw(framecount++);
       show((byte *)pixels, sizeof(pixels));
-
-      delay(2);
     }
   }
 }

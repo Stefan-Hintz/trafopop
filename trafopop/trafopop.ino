@@ -448,9 +448,9 @@ inline void drawWalker(long frameCount)
     Color color =
     {
       (max(0,255*sin(c))), (max(0,255*sin((c)*0.81))), (max(0,255*sin(c*0.69)))
-    };
+      };
 
-    pixels[i] = color; 
+      pixels[i] = color; 
   }
 }
 
@@ -463,7 +463,7 @@ void show(byte *bytes, int size)
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
-  
+
   delay(2);
 }
 
@@ -475,6 +475,10 @@ void setup()
   // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
   SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
   // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
+}
+
+void loop()
+{
   long framecount = 0;
 
   while (1)
@@ -505,7 +509,4 @@ void setup()
   }
 }
 
-void loop()
-{
-}
 

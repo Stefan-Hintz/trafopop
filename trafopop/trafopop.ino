@@ -1,245 +1,106 @@
-#include <SPI.h>
+#include <Adafruit_NeoPixel.h>
 
-#define NUM 50
+#define NUM 36
 
-typedef struct color
+#define PIN 11
+
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM, PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() 
 {
-  byte r, g, b;
+  strip.begin();
+  strip.setBrightness(64);
+  strip.show(); // Initialize all pixels to 'off'
 }
-Color;
 
-Color pixels[NUM];
-
-#if 0
-
-char pointX[NUM] =
+// Fill the dots one after the other with a color
+void colorWipe(uint32_t c, uint8_t wait) 
 {
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
-};
+  for(uint16_t i=0; i<strip.numPixels(); i++) 
+  {
+    strip.setPixelColor(i, c);
+    strip.show();
 
-char pointY[NUM] =
+    delay(wait);
+  }
+}
+
+void rainbow(uint8_t wait) 
 {
-  4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,0
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-};
+  uint16_t i, j;
+
+  for(j=0; j<256; j++) 
+  {
+    for(i=0; i<strip.numPixels(); i++) 
+    {
+      strip.setPixelColor(i, Wheel((i+j) & 255));
+    }
+
+    strip.show();
+
+    delay(wait);
+  }
+}
+
+// Slightly different, this makes the rainbow equally distributed throughout
+void rainbowCycle(uint8_t wait) 
+{
+  uint16_t i, j;
+
+  for(j=0; j<256*5; j++)
+  { 
+    // 5 cycles of all colors on wheel
+    for(i=0; i< strip.numPixels(); i++)
+    {
+      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+    }
+
+    strip.show();
+
+    delay(wait);
+  }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos)
+{
+  if (WheelPos < 85)
+  {
+    return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  }
+
+  if (WheelPos < 170)
+  {
+    WheelPos -= 85;
+
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+
+  WheelPos -= 170;
+
+  return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+}
 
 inline char normalizedX(byte index)
 {
-  return pointX[index];
+  byte x = index % 12;
+  byte y = index / 12;
+
+  return y == 1 ? x : 11 - x;
 }
 
 inline char normalizedY(byte index)
 {
-  return pointY[index];
+  return index / 12;
 }
-#else
-inline char normalizedX(byte index)
-{
-  return index/10;
-}
-
-inline char normalizedY(byte index)
-{
-  return index%10;
-}
-#endif
 
 typedef struct CGPoint
 {
@@ -317,12 +178,7 @@ inline void draw(float frameCount)
     v *= light;
     w *= light;
 
-    struct color color2 =
-    {
-      u,v,w 
-    };
-
-    pixels[i] = color2;
+    strip.setPixelColor(i, u, v, w);
   }
 }
 
@@ -373,7 +229,7 @@ inline void draw2(float frameCount)
 
     CGPoint ncolor = normalize(color);
     /*
-    float red = c * ncolor.x;
+     float red = c * ncolor.x;
      float green = c * ncolor.y;
      float blue = c * (-ncolor.x-ncolor.y);
      */
@@ -381,16 +237,11 @@ inline void draw2(float frameCount)
     float green = ncolor.y;
     float blue = c * (ncolor.x-ncolor.y);
     /*
-  red = cos(red*3.0+0.5)+sin(red*2.0);
+     red = cos(red*3.0+0.5)+sin(red*2.0);
      green = cos(green*3.0+0.5)+sin(green*2.0);
      blue = cos(blue*3.0+0.5)+sin(blue*2.0);
      */
-    Color color2 =
-    {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
-      };
-
-      pixels[i] = color2;
+    strip.setPixelColor(i, max(0,red * 255), max(0,green * 255), max(0,blue * 255));
   }
 }
 
@@ -429,12 +280,7 @@ inline void draw3(float frameCount)
     float green = ncolor.x*ncolor.y;
     float blue = ncolor.x-ncolor.y;
 
-    Color color2 = 
-    {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
-      };
-
-      pixels[i] = color2;
+    strip.setPixelColor(i, max(0,red * 255), max(0,green * 255), max(0,blue * 255));
   }
 }
 
@@ -445,68 +291,49 @@ inline void drawWalker(long frameCount)
   for (byte i = 0; i < NUM; i++)
   {
     float c = i*0.1+30*cos(time*0.1)+time*0.11;
-    Color color =
-    {
-      (max(0,255*sin(c))), (max(0,255*sin((c)*0.81))), (max(0,255*sin(c*0.69)))
-      };
 
-      pixels[i] = color; 
+    strip.setPixelColor(i, (max(0,255*sin(c))), (max(0,255*sin((c)*0.81))), (max(0,255*sin(c*0.69))));
   }
-}
-
-void show(byte *bytes, int size)
-{
-  for (int index = 0; index < size; index++)
-  {
-    // nur 25% Helligkeit    
-    byte c = bytes[index] >> 2;
-
-    for (SPDR = c; !(SPSR & _BV(SPIF)););
-  }
-
-  delay(2);
-}
-
-void setup()
-{
-  SPI.begin();
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
-  // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
-  SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
-  // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
 }
 
 void loop()
 {
   long framecount = 0;
 
+  // Some example procedures showing how to display to the pixels:
+  //  colorWipe(strip.Color(255, 0, 0), 50); // Red
+  //  colorWipe(strip.Color(0, 255, 0), 50); // Green
+  //  colorWipe(strip.Color(0, 0, 255), 50); // Blue
+
   while (1)
   {
     for (int i = 0; i < 2000; i++)
     {
       drawWalker(framecount++);
-      show((byte *)pixels, sizeof(pixels));
+      strip.show();
     }
 
     for (int i = 0; i < 2000; i++)
     {
       draw3(framecount++);
-      show((byte *)pixels, sizeof(pixels));
+      strip.show();
     }
 
     for (int i = 0; i < 1000; i++)
     {
       draw2(framecount++);
-      show((byte *)pixels, sizeof(pixels));
+      strip.show();
     }
+
+    rainbow(20);
 
     for (int i = 0; i < 1000; i++)
     {
       draw(framecount++);
-      show((byte *)pixels, sizeof(pixels));
+      strip.show();
     }
+
+    rainbowCycle(20);
   }
 }
-
 

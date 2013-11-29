@@ -24,6 +24,8 @@ Each branch is different because of different layout. It can also be different b
 different colors or scaling.
 Please switch to your branch.
 
+The code in this branch is used for the Three Triangel: http://www.trafopop.com/project/led-jacket-david-triangel/
+
 ---
 
 Additional required tool for editing, compiling and uploading the code to the Arduino:

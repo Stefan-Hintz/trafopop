@@ -1,7 +1,7 @@
 Trafo Pop
 =========
 
-wearable LEDs using Arduino Nano and WS2801
+wearable LEDs using Arduino Nano and WS2812B
 
 This repositiory contains the software for the "build your own LED jacket" workshop.
 
@@ -18,11 +18,15 @@ We have several branches, one for each jacket, coat, hat or bag:
 - mb
 - db
 - sk
+- Handbag
 …
 
 Each branch is different because of different layout. It can also be different because of
-different colors or scaling.
+different colors or scaling or different LEDs.
 Please switch to your branch.
+
+The code in this branch is used for the LEDer Handbag:
+http://www.trafopop.com/project/everything-will-be-ok-bag/
 
 ---
 
@@ -38,6 +42,11 @@ In the Arduino Software in the Tools menu select your Board: Arduino Nano w/ ATm
 And select the serial port: /dev/tty.usbserial… (on Mac)
 
 See also: http://arduino.cc/en/Guide/Howto
- 
+
+For using WS2812B LEDs which have a WS2811 chip build in and do not have the usual WS2801
+chip an addition Arduino library has to be installed before you start your Arduino
+software on your computer:
+https://github.com/adafruit/Adafruit_NeoPixel
+
 Additional optional tool for easier git usage:
 http://www.sourcetreeapp.com

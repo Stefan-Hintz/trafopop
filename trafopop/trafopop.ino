@@ -16,7 +16,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM, PIN, NEO_GRB + NEO_KHZ800);
 void setup() 
 {
   strip.begin();
-  strip.setBrightness(64);
+  strip.setBrightness(32);
   strip.show(); // Initialize all pixels to 'off'
 }
 

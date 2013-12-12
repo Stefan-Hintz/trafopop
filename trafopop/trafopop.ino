@@ -129,7 +129,7 @@ inline void draw(float frameCount)
 
 inline void draw2(float frameCount)
 {
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  float s = 0.003 * (0.7 + 0.2 * sin(frameCount * 0.000827));
   float r = 2.0 * M_PI * sin(frameCount * 0.000742);
 
   float time = frameCount * 0.002;

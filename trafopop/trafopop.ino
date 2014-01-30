@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 
-#define NUM 36
+#define NUM 124
 
-#define PIN 11
+#define PIN 16
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = pin number (most are valid)
@@ -91,15 +91,10 @@ uint32_t Wheel(byte WheelPos)
 
 inline char normalizedX(byte index)
 {
-  byte x = index % 12;
-  byte y = index / 12;
+  byte x = index % 25;
+  byte y = index / 25;
 
-  return y == 1 ? x : 11 - x;
-}
-
-inline char normalizedY(byte index)
-{
-  return index / 12;
+  return y % 2 == 1 ? x : 26 - x;
 }
 
 typedef struct CGPoint
@@ -108,6 +103,39 @@ typedef struct CGPoint
   float y;
 }
 CGPoint;
+
+inline struct CGPoint normalizedPoint(byte index)
+{
+  CGPoint point;
+
+  if (index < 24)
+  {
+    point.x = -2;
+    point.y = index;
+  }
+  else if (index < 49)
+  {
+    point.x = -1;
+    point.y = 48 - index;
+  }
+  else if (index < 75)
+  {
+    point.x = 0;
+    point.y = index - 49;
+  }
+  else if (index < 100)
+  {
+    point.x = 1;
+    point.y = 99 - index;
+  }
+  else
+  {
+    point.x = 2;
+    point.y = index - 100;
+  }
+
+  return point;
+}
 
 inline struct CGPoint CGPointMake(float x, float y)
 {
@@ -153,8 +181,9 @@ inline void draw(float frameCount)
 
   for (byte i = 0; i < NUM; i++)
   {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
+    CGPoint point = normalizedPoint(i);
+    float x0 = s * point.x;
+    float y0 = s * point.y;
     float x = (x0*cosr - y0*sinr);
     float y = (x0*sinr + y0*cosr);
 
@@ -200,8 +229,9 @@ inline void draw2(float frameCount)
 
   for (byte i = 0; i < NUM; i++)
   {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
+    CGPoint point = normalizedPoint(i);
+    float x0 = s * point.x;
+    float y0 = s * point.y;
     float x = (x0*cosr - y0*sinr);
     float y = (x0*sinr + y0*cosr);
 
@@ -260,8 +290,9 @@ inline void draw3(float frameCount)
 
   for (byte i = 0; i < NUM; i++)
   {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
+    CGPoint point = normalizedPoint(i);
+    float x0 = s * point.x;
+    float y0 = s * point.y;
     float x = (x0*cosr - y0*sinr);
     float y = (x0*sinr + y0*cosr);
 
@@ -325,7 +356,10 @@ void loop()
       strip.show();
     }
 
-    rainbow(20);
+    for (int i = 0; i < 10; i++)
+    {
+      rainbow(20);
+    }
 
     for (int i = 0; i < 1000; i++)
     {

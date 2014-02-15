@@ -1,14 +1,6 @@
 #include <SPI.h>
 
-#define NUM 100
-
-typedef struct color
-{
-  byte r, g, b;
-}
-color;
-
-color pixels[NUM];
+#define NUM sizeof(positions)/sizeof(Point)
 
 typedef struct Point
 {
@@ -120,6 +112,14 @@ Point positions[100] =
 -5,6,
 -5,7,
 };
+
+typedef struct color
+{
+  byte r, g, b;
+}
+color;
+
+color pixels[NUM];
 
 inline char normalizedX(byte index)
 {

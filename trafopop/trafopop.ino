@@ -10,222 +10,125 @@ color;
 
 color pixels[NUM];
 
-char pointX[NUM] =
+typedef struct Point
 {
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
-};
+  char x;
+  char y;
+}
+Point;
 
-char pointY[NUM] =
+Point positions[100] =
 {
-  4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,0
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
+5,-1,
+5,0,
+5,1,
+5,2,
+5,3,
+5,4,
+5,5,
+5,6,
+5,7,
+4,6,
+4,5,
+4,4,
+4,3,
+4,2,
+4,1,
+4,0,
+4,-1,
+4,-2,
+4,-3,
+3,-3,
+3,-2,
+3,-1,
+3,0,
+3,1,
+3,2,
+3,3,
+3,4,
+3,5,
+2,4,
+2,3,
+2,2,
+2,1,
+2,0,
+2,-1,
+2,-2,
+2,-3,
+1,-4,
+1,-3,
+1,-2,
+1,-1,
+1,0,
+1,1,
+1,2,
+1,3,
+1,4,
+0,4,
+0,3,
+0,2,
+0,1,
+0,0,
+0,-1,
+0,-2,
+0,-3,
+0,-4,
+0,-5,
+-1,-4,
+-1,-3,
+-1,-2,
+-1,-1,
+-1,0,
+-1,1,
+-1,2,
+-1,3,
+-1,4,
+-2,4,
+-2,3,
+-2,2,
+-2,1,
+-2,0,
+-2,-1,
+-2,-2,
+-2,-3,
+-3,-3,
+-3,-2,
+-3,-1,
+-3,0,
+-3,1,
+-3,2,
+-3,3,
+-3,4,
+-3,5,
+-4,6,
+-4,5,
+-4,4,
+-4,3,
+-4,2,
+-4,1,
+-4,0,
+-4,-1,
+-4,-2,
+-4,-3,
+-5,-1,
+-5,0,
+-5,1,
+-5,2,
+-5,3,
+-5,4,
+-5,5,
+-5,6,
+-5,7,
 };
 
 inline char normalizedX(byte index)
 {
-  return pointX[index];
+  return positions[index].x;
 }
 
 inline char normalizedY(byte index)
 {
-  return pointY[index];
+  return positions[index].y;
 }
 
 typedef struct CGPoint
@@ -383,10 +286,10 @@ inline void draw2(float frameCount)
 
 void show2(byte *bytes, int size)
 {
-  for (int index=0; index<size; index++)
+  for (int index = 0; index < size; index++)
   {
-    // nur 25% Helligkeit    
-    byte c = bytes[index] >> 2;
+    // nur 12.5% Helligkeit    
+    byte c = bytes[index] >> 3;
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
@@ -400,18 +303,15 @@ void setup()
   // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
   SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
   // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
-  long framecount = 0;
-
-  while (1)
-  {
-    draw2(framecount++);
-    show2((byte *)pixels, sizeof(pixels));
-
-    delay(2);
-  }
 }
+
+long framecount = 0;
 
 void loop()
 {
+  draw2(framecount++);
+  show2((byte *)pixels, sizeof(pixels));
+
+  delay(2);
 }
 

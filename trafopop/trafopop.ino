@@ -9,58 +9,42 @@ typedef struct Point
 }
 Point;
 
-Point positions[50] =
+Point positions[34] =
 {
-  8,8,
-  7,9,
-  6,10,
-  5,10,
-  5,9,
-  5,8,
-  5,7,
-  5,6,
-  4,5,
-  4,6,
-  4,7,
-  4,8,
-  4,9,
-  3,8,
-  3,7,
-  3,6,
-  3,5,
-  2,5,
-  2,6,
-  2,7,
-  1,6,
-  1,5,
-  1,4,
-  0,5,
-  0,4,
-  0,3,
-  0,2,
-  1,0,
-  3,0,
-  4,0,
-  5,0,
-  6,0,
-  7,0,
-  9,1,
-  8,1,
-  7,1,
-  6,1,
-  5,1,
-  4,1,
-  6,2,
-  7,2,
-  8,2,
-  9,2,
-  10,2,
-  11,2,
-  11,3,
-  10,3,
-  9,3,
-  8,3,
-  7,3,
+-10,-4,
+-10,-3,
+-9,-3,
+-9,-4,
+-4,-3,
+-4,-2,
+-4,-1,
+-5,-2,
+-5,-1,
+-5,0,
+-5,1,
+-5,2,
+-5,3,
+-4,2,
+-3,1,
+-3,2,
+-3,3,
+-3,4,
+-3,5,
+3,5,
+3,4,
+3,3,
+3,2,
+3,1,
+4,2,
+5,3,
+5,2,
+5,1,
+5,0,
+5,-1,
+5,-2,
+4,-1,
+4,-2,
+4,-3,
 };
 
 typedef struct color
@@ -182,7 +166,7 @@ inline void draw2(float frameCount)
   // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
   // float size = (sin(time*0.1)+1.2)*64.0;
 
-  for (byte i = 0; i < NUM; i++)
+  for (byte i = 4; i < NUM; i++)
   {
     float x0 = s * normalizedX(i);
     float y0 = s * normalizedY(i);
@@ -234,26 +218,33 @@ inline void draw2(float frameCount)
   }
 }
 
-inline void drawYJ(float frameCount)
+inline void drawPulsar(float frameCount)
 {
-  float time = frameCount * 0.01;
-  float s = 0.1; // * (0.7 + 0.2 * sin(frameCount * 0.000827));
+  float time = frameCount * 0.05;
 
-  for (byte i = 0; i < NUM; i++)
+  byte red = 128 + 127 * sin(time);
+  byte white = 255 - red;
+
+  for (byte i = 0; i < 4; i++)
   {
-    float x = s * normalizedX(i);
-    float y = s * normalizedY(i);
-
-    float c = x*x+y*y - cos(2.0 * time);
-    c*=c;
-    c*=c;
-
-    struct color color2 =
+    if (i%2)
     {
-      min(255, max(0,(1-c) * 255)), min(255, max(0,c * 255)), min(255, max(0,(1-c) * 255))
+      struct color color2 =
+      {
+        red, 0, 0
       };
 
       pixels[i] = color2;
+    }
+    else
+    {
+      struct color color2 =
+      {
+        white, white, white
+      };
+
+      pixels[i] = color2;
+    }
   }
 }
 
@@ -282,7 +273,8 @@ long framecount = 0;
 
 void loop()
 {
-  drawYJ(framecount++);
+  drawPulsar(framecount);
+  draw2(framecount++);
   show2((byte *)pixels, sizeof(pixels));
 
   delay(2);

@@ -208,7 +208,7 @@ inline void draw2(float frameCount)
      color.x += cos(d);
      color.y += sin(d);
      */
-    float c = sqrt(color.x*color.x+color.y*color.y)*0.25;
+  //  float c = sqrt(color.x*color.x+color.y*color.y)*0.25;
     // float c = (color.x*color.x+color.y*color.y);
 
     CGPoint ncolor = normalize(color);
@@ -218,8 +218,8 @@ inline void draw2(float frameCount)
      float blue = c * (-ncolor.x-ncolor.y);
      */
     float red = ncolor.x;
-    float green = ncolor.y;
-    float blue = c * (ncolor.x-ncolor.y);
+//    float green = ncolor.y;
+ //   float blue = c * (ncolor.x-ncolor.y);
     /*
   red = cos(red*3.0+0.5)+sin(red*2.0);
      green = cos(green*3.0+0.5)+sin(green*2.0);
@@ -227,7 +227,7 @@ inline void draw2(float frameCount)
      */
     struct color color2 =
     {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
+      max(0,red * 255), max(0,red * 255), max(0,red * 255)
       };
 
       pixels[i] = color2;

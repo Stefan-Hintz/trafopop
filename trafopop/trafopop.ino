@@ -9,42 +9,58 @@ typedef struct Point
 }
 Point;
 
-Point positions[34] =
+Point positions[50] =
 {
--10,-4,
--10,-3,
--9,-3,
--9,-4,
--4,-3,
--4,-2,
--4,-1,
--5,-2,
--5,-1,
--5,0,
--5,1,
--5,2,
--5,3,
--4,2,
--3,1,
--3,2,
--3,3,
--3,4,
--3,5,
-3,5,
-3,4,
+0,0,
+0,1,
+1,0,
+2,0,
+1,1,
+0,2,
+0,3,
+1,2,
+2,1,
+3,0,
+4,0,
+3,1,
+2,2,
+1,3,
+1,4,
+2,3,
+3,2,
+4,1,
+0,0,
+0,1,
+0,2,
+1,1,
+1,0,
+2,0,
+2,1,
+1,2,
+1,3,
+2,2,
+2,3,
+1,4,
+2,4,
 3,3,
 3,2,
-3,1,
 4,2,
-5,3,
-5,2,
 5,1,
+4,1,
+4,0,
 5,0,
 5,-1,
-5,-2,
 4,-1,
-4,-2,
-4,-3,
+5,-2,
+6,-2,
+0,1,
+0,0,
+1,0,
+2,0,
+1,-1,
+1,-2,
+2,-1,
+3,0,
 };
 
 typedef struct color
@@ -166,7 +182,7 @@ inline void draw2(float frameCount)
   // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
   // float size = (sin(time*0.1)+1.2)*64.0;
 
-  for (byte i = 4; i < NUM; i++)
+  for (byte i = 0; i < NUM; i++)
   {
     float x0 = s * normalizedX(i);
     float y0 = s * normalizedY(i);
@@ -273,7 +289,7 @@ long framecount = 0;
 
 void loop()
 {
-  drawPulsar(framecount);
+ // drawPulsar(framecount);
   draw2(framecount++);
   show2((byte *)pixels, sizeof(pixels));
 

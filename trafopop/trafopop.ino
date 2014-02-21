@@ -11,56 +11,56 @@ Point;
 
 Point positions[50] =
 {
-8,8,
-7,9,
-6,10,
-5,10,
-5,9,
-5,8,
-5,7,
-5,6,
-4,5,
-4,6,
-4,7,
-4,8,
-4,9,
-3,8,
-3,7,
-3,6,
-3,5,
-2,5,
-2,6,
-2,7,
-1,6,
-1,5,
-1,4,
-0,5,
-0,4,
-0,3,
-0,2,
-1,0,
-3,0,
-4,0,
-5,0,
-6,0,
-7,0,
-9,1,
-8,1,
-7,1,
-6,1,
-5,1,
-4,1,
-6,2,
-7,2,
-8,2,
-9,2,
-10,2,
-11,2,
-11,3,
-10,3,
-9,3,
-8,3,
-7,3,
+  8,8,
+  7,9,
+  6,10,
+  5,10,
+  5,9,
+  5,8,
+  5,7,
+  5,6,
+  4,5,
+  4,6,
+  4,7,
+  4,8,
+  4,9,
+  3,8,
+  3,7,
+  3,6,
+  3,5,
+  2,5,
+  2,6,
+  2,7,
+  1,6,
+  1,5,
+  1,4,
+  0,5,
+  0,4,
+  0,3,
+  0,2,
+  1,0,
+  3,0,
+  4,0,
+  5,0,
+  6,0,
+  7,0,
+  9,1,
+  8,1,
+  7,1,
+  6,1,
+  5,1,
+  4,1,
+  6,2,
+  7,2,
+  8,2,
+  9,2,
+  10,2,
+  11,2,
+  11,3,
+  10,3,
+  9,3,
+  8,3,
+  7,3,
 };
 
 typedef struct color
@@ -234,6 +234,29 @@ inline void draw2(float frameCount)
   }
 }
 
+inline void drawYJ(float frameCount)
+{
+  float time = frameCount * 0.01;
+  float s = 0.1; // * (0.7 + 0.2 * sin(frameCount * 0.000827));
+
+  for (byte i = 0; i < NUM; i++)
+  {
+    float x = s * normalizedX(i);
+    float y = s * normalizedY(i);
+
+    float c = x*x+y*y - cos(2.0 * time);
+    c*=c;
+    c*=c;
+
+    struct color color2 =
+    {
+      min(255, max(0,(1-c) * 255)), min(255, max(0,c * 255)), min(255, max(0,(1-c) * 255))
+      };
+
+      pixels[i] = color2;
+  }
+}
+
 void show2(byte *bytes, int size)
 {
   for (int index = 0; index < size; index++)
@@ -259,7 +282,7 @@ long framecount = 0;
 
 void loop()
 {
-  draw2(framecount++);
+  drawYJ(framecount++);
   show2((byte *)pixels, sizeof(pixels));
 
   delay(2);

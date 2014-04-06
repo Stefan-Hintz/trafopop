@@ -46,7 +46,7 @@ CGPoint;
 void show(byte *bytes, int size)
 {
 #ifdef BRIGHTNESS_POTI
-  int inputValue = analogRead(BRIGHTNESS_POTI) >> 7;
+  int inputValue = map(analogRead(BRIGHTNESS_POTI), 0, 1023, 7, 2);
 #else
   int inputValue = 3;
 #endif
@@ -63,7 +63,7 @@ void show(byte *bytes, int size)
 void show2(byte *bytes, int size)
 {
 #ifdef BRIGHTNESS_POTI
-  int inputValue = analogRead(BRIGHTNESS_POTI) >> 7;
+  int inputValue = map(analogRead(BRIGHTNESS_POTI), 0, 1023, 7, 2);
 #else
   int inputValue = 3;
 #endif

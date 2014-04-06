@@ -12,8 +12,10 @@
 #include "image8.h"
 #include "image9.h"
 
-#define NEXT_FRAME_BUTTON 5
 #define ANIMATION_TIME 1000
+
+// #define BRIGHTNESS_POTI A0
+#define NEXT_FRAME_BUTTON 5
 
 #define NUM sizeof(positions)/sizeof(Point)
 
@@ -43,10 +45,16 @@ CGPoint;
 
 void show(byte *bytes, int size)
 {
+#ifdef BRIGHTNESS_POTI
+  int inputValue = analogRead(BRIGHTNESS_POTI) >> 7;
+#else
+  int inputValue = 3;
+#endif
+
   for (int index = 0; index < size; index++)
   {
     // nur 12.5% Helligkeit
-    byte c = pgm_read_byte(bytes + index) >> 3;
+    byte c = pgm_read_byte(bytes + index) >> inputValue;
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
@@ -54,10 +62,16 @@ void show(byte *bytes, int size)
 
 void show2(byte *bytes, int size)
 {
+#ifdef BRIGHTNESS_POTI
+  int inputValue = analogRead(BRIGHTNESS_POTI) >> 7;
+#else
+  int inputValue = 3;
+#endif
+
   for (int index = 0; index < size; index++)
   {
     // nur 12.5% Helligkeit    
-    byte c = bytes[index] >> 3;
+    byte c = bytes[index] >> inputValue;
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
@@ -77,7 +91,7 @@ void setup()
 
 long framecount = 0;
 boolean running = true;
-byte status = 0;
+int status = 0;
 boolean button = false;
 long buttonTime = 0;
 
@@ -127,6 +141,29 @@ void loop()
 
   switch (status)
   {
+  default:
+    {
+      status = -2;
+
+      // no break;
+    }
+
+  case -2:
+    {
+      draw2(framecount++);
+      show2((byte *)pixels, sizeof(pixels));
+
+      break;
+    }
+
+  case -1:
+    {
+      draw(framecount++);
+      show2((byte *)pixels, sizeof(pixels));
+
+      break;
+    }
+
   case 0:
     {
       show(image0, sizeof(image0));
@@ -193,29 +230,6 @@ void loop()
   case 9:
     {
       show(image9, sizeof(image9));
-
-      break;
-    }
-
-  case 10:
-    {
-      draw2(framecount++);
-      show2((byte *)pixels, sizeof(pixels));
-
-      break;
-    }
-
-  case 11:
-    {
-      draw(framecount++);
-      show2((byte *)pixels, sizeof(pixels));
-
-      break;
-    }
-
-  default:
-    {
-      status = 0;
 
       break;
     }

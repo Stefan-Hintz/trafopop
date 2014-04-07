@@ -1,16 +1,7 @@
 #include <SPI.h>
 #include <avr/pgmspace.h>
 
-#include "image0.h"
-#include "image1.h"
-#include "image2.h"
-#include "image3.h"
-#include "image4.h"
-#include "image5.h"
-#include "image6.h"
-#include "image7.h"
-#include "image8.h"
-#include "image9.h"
+#include "images.h"
 
 #define ANIMATION_TIME 1000
 
@@ -164,75 +155,7 @@ void loop()
       break;
     }
 
-  case 0:
-    {
-      show(image0, sizeof(image0));
-
-      break;
-    }
-
-  case 1:
-    {
-      show(image1, sizeof(image1));
-
-      break;
-    }
-
-  case 2:
-    {
-      show(image2, sizeof(image2));
-
-      break;
-    }
-
-  case 3:
-    {
-      show(image3, sizeof(image3));
-
-      break;
-    }
-
-  case 4:
-    {
-      show(image4, sizeof(image4));
-
-      break;
-    }
-
-  case 5:
-    {
-      show(image5, sizeof(image5));
-
-      break;
-    }
-
-  case 6:
-    {
-      show(image6, sizeof(image6));
-
-      break;
-    }
-
-  case 7:
-    {
-      show(image7, sizeof(image7));
-
-      break;
-    }
-
-  case 8:
-    {
-      show(image8, sizeof(image8));
-
-      break;
-    }
-
-  case 9:
-    {
-      show(image9, sizeof(image9));
-
-      break;
-    }
+#include "cases.h"
   }
 
   delay(2);

@@ -3,9 +3,13 @@
 
 #include "images.h"
 
-#define ANIMATION_TIME 1000
 
-// #define BRIGHTNESS_POTI A0
+#define BRIGHTNESS 3
+// #define BRIGHTNESS map(analogRead(A0), 0, 1023, 7, 2)
+
+// #define ANIMATION_TIME 1000
+#define ANIMATION_TIME map(analogRead(A1), 0, 1023, 50, 2000)
+
 #define NEXT_FRAME_BUTTON 5
 
 #define NUM sizeof(positions)/sizeof(Point)
@@ -36,11 +40,7 @@ CGPoint;
 
 void show(byte *bytes, int size)
 {
-#ifdef BRIGHTNESS_POTI
-  int inputValue = map(analogRead(BRIGHTNESS_POTI), 0, 1023, 7, 2);
-#else
-  int inputValue = 3;
-#endif
+  int inputValue = BRIGHTNESS;
 
   for (int index = 0; index < size; index++)
   {
@@ -53,11 +53,7 @@ void show(byte *bytes, int size)
 
 void show2(byte *bytes, int size)
 {
-#ifdef BRIGHTNESS_POTI
-  int inputValue = map(analogRead(BRIGHTNESS_POTI), 0, 1023, 7, 2);
-#else
-  int inputValue = 3;
-#endif
+  int inputValue = BRIGHTNESS;
 
   for (int index = 0; index < size; index++)
   {

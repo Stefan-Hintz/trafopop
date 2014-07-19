@@ -6,8 +6,12 @@
 #define BRIGHTNESS 3
 // #define BRIGHTNESS map(analogRead(A0), 0, 1023, 7, 2)
 
-// #define ANIMATION_TIME 1000
-#define ANIMATION_TIME map(analogRead(A1), 0, 1023, 50, 2000)
+// delay between images in milliseconds
+#define ANIMATION_TIME 1000
+// #define ANIMATION_TIME map(analogRead(A1), 0, 1023, 50, 2000)
+
+// true, false
+#define ANIMATION_RUNNING_AT_START false 
 
 #define NEXT_FRAME_BUTTON 5
 
@@ -76,8 +80,9 @@ void setup()
 }
 
 long framecount = 0;
-boolean running = true;
-int status = 0;
+boolean running = ANIMATION_RUNNING_AT_START;
+int startStatus = ANIMATION_RUNNING_AT_START ? 0 : -2;
+int status = startStatus;
 boolean button = false;
 long buttonTime = 0;
 
@@ -129,11 +134,12 @@ void loop()
   {
   default:
     {
-      status = -2;
+      status = startStatus;
 
       // no break;
     }
 
+#if !ANIMATION_RUNNING_AT_START
   case -2:
     {
       draw2(framecount++);
@@ -149,6 +155,7 @@ void loop()
 
       break;
     }
+#endif
 
 #include "cases.h"
   }

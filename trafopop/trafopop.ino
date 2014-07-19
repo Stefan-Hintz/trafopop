@@ -3,7 +3,6 @@
 
 #include "images.h"
 
-
 #define BRIGHTNESS 3
 // #define BRIGHTNESS map(analogRead(A0), 0, 1023, 7, 2)
 
@@ -69,9 +68,9 @@ void setup()
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
-  // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
-  SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
-  // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz
+
+  // 2 MHz clock frequency
+  SPI.setClockDivider(SPI_CLOCK_DIV8);
 
   digitalWrite(NEXT_FRAME_BUTTON, HIGH);
 }

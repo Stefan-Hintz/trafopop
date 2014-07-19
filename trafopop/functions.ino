@@ -1,4 +1,3 @@
-
 inline char normalizedX(byte index)
 {
   return positions[index].x;

@@ -1,4 +1,19 @@
 #include <SPI.h>
+#include <avr/pgmspace.h>
+
+#include "images.h"
+
+#define BRIGHTNESS 3
+// #define BRIGHTNESS map(analogRead(A0), 0, 1023, 7, 2)
+
+// delay between images in milliseconds
+#define ANIMATION_TIME 1000
+// #define ANIMATION_TIME map(analogRead(A1), 0, 1023, 50, 2000)
+
+// true, false
+#define ANIMATION_RUNNING_AT_START false 
+
+#define NEXT_FRAME_BUTTON 5
 
 #define NUM sizeof(positions)/sizeof(Point)
 
@@ -9,59 +24,7 @@ typedef struct Point
 }
 Point;
 
-Point positions[50] =
-{
-  8,8,
-  7,9,
-  6,10,
-  5,10,
-  5,9,
-  5,8,
-  5,7,
-  5,6,
-  4,5,
-  4,6,
-  4,7,
-  4,8,
-  4,9,
-  3,8,
-  3,7,
-  3,6,
-  3,5,
-  2,5,
-  2,6,
-  2,7,
-  1,6,
-  1,5,
-  1,4,
-  0,5,
-  0,4,
-  0,3,
-  0,2,
-  1,0,
-  3,0,
-  4,0,
-  5,0,
-  6,0,
-  7,0,
-  9,1,
-  8,1,
-  7,1,
-  6,1,
-  5,1,
-  4,1,
-  6,2,
-  7,2,
-  8,2,
-  9,2,
-  10,2,
-  11,2,
-  11,3,
-  10,3,
-  9,3,
-  8,3,
-  7,3,
-};
+#include "positions.h"
 
 typedef struct color
 {
@@ -71,16 +34,6 @@ color;
 
 color pixels[NUM];
 
-inline char normalizedX(byte index)
-{
-  return positions[index].x;
-}
-
-inline char normalizedY(byte index)
-{
-  return positions[index].y;
-}
-
 typedef struct CGPoint
 {
   float x;
@@ -88,181 +41,27 @@ typedef struct CGPoint
 }
 CGPoint;
 
-inline struct CGPoint CGPointMake(float x, float y)
+void show(byte *bytes, int size)
 {
-  struct CGPoint point;
+  int inputValue = BRIGHTNESS;
 
-  point.x = x;
-  point.y = y;
-
-  return point;
-}
-
-inline float distance(CGPoint a, CGPoint b)
-{
-  float x = a.x - b.x;
-  float y = a.y - b.y;
-
-  //  return sqrt(x*x + y*y);
-  return (x*x + y*y);
-}
-
-inline CGPoint normalize(CGPoint p)
-{
-  float length = sqrt(p.x*p.x + p.y*p.y);
-
-  return CGPointMake(p.x/length, p.y/length);
-}
-
-inline void draw(float frameCount)
-{
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
-  float r = 2.0 * M_PI * sin(frameCount * 0.000742);
-
-  float time = frameCount * 0.02;
-
-  float sinr = sin(r);
-  float cosr = cos(r);
-
-  CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
-  // CGPoint center3 = CGPointMake(cos(time*0.346), cos(time*0.263));
-  // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
-  // float size = (sin(time*0.1)+1.2)*64.0;
-
-  for (byte i = 0; i < NUM; i++)
+  for (int index = 0; index < size; index++)
   {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
-    float x = (x0*cosr - y0*sinr);
-    float y = (x0*sinr + y0*cosr);
+    // nur 12.5% Helligkeit
+    byte c = pgm_read_byte(bytes + index) >> inputValue;
 
-    // x++;
-    y++;
-
-    //  float r = sqrt(x*x+y*y);
-    float r = (x*x+y*y);
-    float a = atan2(y, x);
-    float t = time + 100.0/(r+1.0);
-    float s = sin(r+t);
-
-    // float light = 3825.0*fabs(0.05*(sin(t)+sin(time+a*8.0)));
-    byte light = 3200;
-    float u = -sin(r*2.5-a-time+s);
-    float v = sin(r*1.5+a+a-time+s);
-    float w = cos(r+a*3+time)-s;
-    // float l = sqrt(u*u + v*v + w*w);
-
-    u *= light;
-    v *= light;
-    w *= light;
-
-    struct color color2 =
-    {
-      u,v,w 
-    };
-
-    pixels[i] = color2;
-  }
-}
-
-inline void draw2(float frameCount)
-{
-  float s = 0.01 * (0.7 + 0.2 * sin(frameCount * 0.000827));
-  float r = 2.0 * M_PI * sin(frameCount * 0.000742);
-
-  float time = frameCount * 0.002;
-
-  float sinr = sin(r);
-  float cosr = cos(r);
-
-  CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
-  // CGPoint center3 = CGPointMake(cos(time*0.346), cos(time*0.263));
-  // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
-  // float size = (sin(time*0.1)+1.2)*64.0;
-
-  for (byte i = 0; i < NUM; i++)
-  {
-    float x0 = s * normalizedX(i);
-    float y0 = s * normalizedY(i);
-    float x = (x0*cosr - y0*sinr);
-    float y = (x0*sinr + y0*cosr);
-
-    CGPoint position =
-    {
-      x,y
-    };
-
-    int size = 64;
-    float d = distance(position, center1)*size;
-    CGPoint color = CGPointMake(cos(d),sin(d));
-    d = distance(position, center2)*size;
-    color.x += cos(d);
-    color.y += sin(d);
-    /*
-    d = distance(position, center3)*size;
-     color.x += cos(d);
-     color.y += sin(d);
-     d = distance(position, center4)*size;
-     color.x += cos(d);
-     color.y += sin(d);
-     */
-    float c = sqrt(color.x*color.x+color.y*color.y)*0.25;
-    // float c = (color.x*color.x+color.y*color.y);
-
-    CGPoint ncolor = normalize(color);
-    /*
-    float red = c * ncolor.x;
-     float green = c * ncolor.y;
-     float blue = c * (-ncolor.x-ncolor.y);
-     */
-    float red = ncolor.x;
-    float green = ncolor.y;
-    float blue = c * (ncolor.x-ncolor.y);
-    /*
-  red = cos(red*3.0+0.5)+sin(red*2.0);
-     green = cos(green*3.0+0.5)+sin(green*2.0);
-     blue = cos(blue*3.0+0.5)+sin(blue*2.0);
-     */
-    struct color color2 =
-    {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
-      };
-
-      pixels[i] = color2;
-  }
-}
-
-inline void drawYJ(float frameCount)
-{
-  float time = frameCount * 0.01;
-  float s = 0.1; // * (0.7 + 0.2 * sin(frameCount * 0.000827));
-
-  for (byte i = 0; i < NUM; i++)
-  {
-    float x = s * normalizedX(i);
-    float y = s * normalizedY(i);
-
-    float c = x*x+y*y - cos(2.0 * time);
-    c*=c;
-    c*=c;
-
-    struct color color2 =
-    {
-      min(255, max(0,(1-c) * 255)), min(255, max(0,c * 255)), min(255, max(0,(1-c) * 255))
-      };
-
-      pixels[i] = color2;
+    for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
 }
 
 void show2(byte *bytes, int size)
 {
+  int inputValue = BRIGHTNESS;
+
   for (int index = 0; index < size; index++)
   {
     // nur 12.5% Helligkeit    
-    byte c = bytes[index] >> 3;
+    byte c = bytes[index] >> inputValue;
 
     for (SPDR = c; !(SPSR & _BV(SPIF)););
   }
@@ -273,17 +72,93 @@ void setup()
   SPI.begin();
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE0);
-  // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
-  SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
-  // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
+
+  // 2 MHz clock frequency
+  SPI.setClockDivider(SPI_CLOCK_DIV8);
+
+  digitalWrite(NEXT_FRAME_BUTTON, HIGH);
 }
 
 long framecount = 0;
+boolean running = ANIMATION_RUNNING_AT_START;
+int startStatus = ANIMATION_RUNNING_AT_START ? 0 : -2;
+int status = startStatus;
+boolean button = false;
+long buttonTime = 0;
 
 void loop()
 {
-  drawYJ(framecount++);
-  show2((byte *)pixels, sizeof(pixels));
+  boolean oldButton = button;
+  button = !digitalRead(NEXT_FRAME_BUTTON);
+
+  boolean touchUp = (oldButton && !button);
+
+  if (running)
+  {
+    if (touchUp && buttonTime < 50)
+    {
+      running = false;
+    }
+    else
+    {
+      status++;
+      delay(ANIMATION_TIME);
+    }
+  }
+  else
+  {
+    if (touchUp)
+    {
+      status++;
+    }
+  }
+
+  if (button)
+  {
+    if (buttonTime > 50)
+    {
+      running = true;
+    }
+    else
+    {
+      buttonTime++;
+      delay(10);
+    }
+  }
+  else
+  {
+    buttonTime = 0;
+  }
+
+  switch (status)
+  {
+  default:
+    {
+      status = startStatus;
+
+      // no break;
+    }
+
+#if !ANIMATION_RUNNING_AT_START
+  case -2:
+    {
+      draw2(framecount++);
+      show2((byte *)pixels, sizeof(pixels));
+
+      break;
+    }
+
+  case -1:
+    {
+      draw(framecount++);
+      show2((byte *)pixels, sizeof(pixels));
+
+      break;
+    }
+#endif
+
+#include "cases.h"
+  }
 
   delay(2);
 }

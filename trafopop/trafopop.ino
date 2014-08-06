@@ -11,7 +11,7 @@
 // #define ANIMATION_TIME map(analogRead(A1), 0, 1023, 50, 2000)
 
 // true, false
-#define ANIMATION_RUNNING_AT_START false 
+#define ANIMATION_RUNNING_AT_START true 
 
 #define NEXT_FRAME_BUTTON 5
 

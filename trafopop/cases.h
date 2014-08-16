@@ -145,3 +145,10 @@
       break;
     }
 
+  case 21:
+    {
+      show(image21, sizeof(image21));
+
+      break;
+    }
+

@@ -2,6 +2,9 @@
 
 #define NUM 50
 
+// 1 .. 255
+#define BRIGHTNESS 15
+
 typedef struct color
 {
   byte r, g, b;
@@ -10,226 +13,6 @@ Color;
 
 Color pixels[NUM];
 
-#if 0
-
-char pointX[NUM] =
-{
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  9,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  8,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  7,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  6,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  5,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  4,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  1,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
-};
-
-char pointY[NUM] =
-{
-  4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,1
-    ,0
-    ,1
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,2
-    ,3
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,10
-    ,9
-    ,8
-    ,7
-    ,6
-    ,5
-    ,4
-    ,3
-    ,2
-    ,4
-    ,5
-    ,6
-    ,7
-    ,8
-    ,9
-    ,10
-    ,11
-    ,12
-};
-
-inline char normalizedX(byte index)
-{
-  return pointX[index];
-}
-
-inline char normalizedY(byte index)
-{
-  return pointY[index];
-}
-#else
 inline char normalizedX(byte index)
 {
   return index/10;
@@ -239,7 +22,6 @@ inline char normalizedY(byte index)
 {
   return index%10;
 }
-#endif
 
 typedef struct CGPoint
 {
@@ -319,7 +101,7 @@ inline void draw(float frameCount)
 
     struct color color2 =
     {
-      u,v,w 
+      ((int)u & 255) * BRIGHTNESS / 255, ((int)v & 255) * BRIGHTNESS / 255, ((int)w & 255) * BRIGHTNESS / 255 
     };
 
     pixels[i] = color2;
@@ -387,7 +169,7 @@ inline void draw2(float frameCount)
      */
     Color color2 =
     {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
+      max(0,red * BRIGHTNESS), max(0,green * BRIGHTNESS), max(0,blue * BRIGHTNESS)
       };
 
       pixels[i] = color2;
@@ -431,14 +213,14 @@ inline void draw3(float frameCount)
 
     Color color2 = 
     {
-      max(0,red * 255), max(0,green * 255), max(0,blue * 255)
+      max(0,red * BRIGHTNESS), max(0,green * BRIGHTNESS), max(0,blue * BRIGHTNESS)
       };
 
       pixels[i] = color2;
   }
 }
 
-inline void drawWalker(long frameCount)
+inline void drawWalker(float frameCount)
 {
   float time = frameCount * 0.03;
 
@@ -447,34 +229,34 @@ inline void drawWalker(long frameCount)
     float c = i*0.1+30*cos(time*0.1)+time*0.11;
     Color color =
     {
-      (max(0,255*sin(c))), (max(0,255*sin((c)*0.81))), (max(0,255*sin(c*0.69)))
+      (max(0,BRIGHTNESS*sin(c))), (max(0,BRIGHTNESS*sin((c)*0.81))), (max(0,BRIGHTNESS*sin(c*0.69)))
       };
 
-      pixels[i] = color; 
+      pixels[i] = color;
   }
 }
 
 void show(byte *bytes, int size)
-{
+{/*
   for (int index = 0; index < size; index++)
-  {
-    // nur 25% Helligkeit    
-    byte c = bytes[index] >> 2;
+ {
+ // nur 12.5% Helligkeit    
+ byte c = bytes[index] >> 3;
+ 
+ //  for (SPDR = c; !(SPSR & _BV(SPIF)););
+ SPI.transfer(c);
+ }
+ */
+  // noInterrupts();
+  SPI.transferBuffer(bytes, NULL, size);
+  // interrupts();
 
-    for (SPDR = c; !(SPSR & _BV(SPIF)););
-  }
-
-  delay(2);
+  delay(1);
 }
 
 void setup()
 {
   SPI.begin();
-  SPI.setBitOrder(MSBFIRST);
-  SPI.setDataMode(SPI_MODE0);
-  // SPI.setClockDivider(SPI_CLOCK_DIV16);  // 1 MHz
-  SPI.setClockDivider(SPI_CLOCK_DIV8);  // 2 MHz
-  // SPI.setClockDivider(SPI_CLOCK_DIV4);  // 4 MHz 
 }
 
 void loop()
@@ -483,30 +265,29 @@ void loop()
 
   while (1)
   {
-    for (int i = 0; i < 2000; i++)
+    for (int i = 0; i < 20000; i++)
     {
-      drawWalker(framecount++);
+      drawWalker(0.1 * framecount++);
       show((byte *)pixels, sizeof(pixels));
     }
 
-    for (int i = 0; i < 2000; i++)
+    for (int i = 0; i < 20000; i++)
     {
-      draw3(framecount++);
+      draw3(0.1 * framecount++);
       show((byte *)pixels, sizeof(pixels));
     }
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000; i++)
     {
-      draw2(framecount++);
+      draw2(0.1 * framecount++);
       show((byte *)pixels, sizeof(pixels));
     }
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000; i++)
     {
-      draw(framecount++);
+      draw(0.1 * framecount++);
       show((byte *)pixels, sizeof(pixels));
     }
   }
 }
-
 

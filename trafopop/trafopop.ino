@@ -66,8 +66,8 @@ inline void draw(float frameCount)
   float sinr = sin(r);
   float cosr = cos(r);
 
-  CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
+  // CGPoint center1 = CGPointMake(cos(time), cos(time*0.535));
+  // CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
   // CGPoint center3 = CGPointMake(cos(time*0.346), cos(time*0.263));
   // CGPoint center4 = CGPointMake(cos(time*0.1346), cos(time*0.1263));
   // float size = (sin(time*0.1)+1.2)*64.0;
@@ -187,7 +187,7 @@ inline void draw3(float frameCount)
   float cosr = cos(r);
 
   CGPoint center1 = CGPointMake(cos(time*0.1), cos(time*0.535));
-  CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
+  // CGPoint center2 = CGPointMake(cos(time*0.259), cos(time*0.605));
 
   for (byte i = 0; i < NUM; i++)
   {
